@@ -3,12 +3,12 @@ import 'package:link_preview_generator/src/utils/scrapper.dart';
 import 'package:universal_html/html.dart';
 
 class AudioScrapper {
-  static WebInfo scrape(HtmlDocument doc, String url) {
+  static WebInfo scrape(String url) {
     try {
       return WebInfo(
         description: url.substring(url.lastIndexOf('/') + 1),
-        domain: LinkPreviewScrapper.getDomain(doc, url) ?? url,
-        icon: LinkPreviewScrapper.getIcon(doc, url) ?? '',
+        domain: url,
+        icon: '',
         image: '',
         video: '',
         title: url.substring(url.lastIndexOf('/') + 1),
@@ -18,7 +18,7 @@ class AudioScrapper {
       print('Audio scrapper failure Error: $e');
       return WebInfo(
         description: url,
-        domain: LinkPreviewScrapper.getDomain(doc, url) ?? url,
+        domain: url,
         icon: '',
         image: '',
         video: '',

@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import 'package:link_preview_generator/src/models/types.dart';
 import 'package:link_preview_generator/src/rules/amazon.scrapper.dart';
+import 'package:link_preview_generator/src/rules/audio.scrapper.dart';
 import 'package:link_preview_generator/src/rules/default.scrapper.dart';
 import 'package:link_preview_generator/src/rules/image.scrapper.dart';
 import 'package:link_preview_generator/src/rules/instagram.scrapper.dart';
@@ -35,29 +36,34 @@ class LinkPreview {
 
       final mimeType = response.headers['content-type'] ?? '';
       final data = response.body;
-      final doc = parseHtmlDocument(data);
+
 
       if (LinkPreviewScrapper.isMimeVideo(mimeType)) {
-        return VideoScrapper.scrape(doc, url);
+        return VideoScrapper.scrape(url);
       } else if (LinkPreviewScrapper.isMimeAudio(mimeType)) {
-        return ImageScrapper.scrape(doc, url);
+        return AudioScrapper.scrape(url);
       } else if (LinkPreviewScrapper.isMimeImage(mimeType)) {
-        return ImageScrapper.scrape(doc, url);
+        return ImageScrapper.scrape(url);
       } else if (LinkPreviewScrapper.isUrlInsta(url)) {
         final instagramResponse = await http.get(
           Uri.parse('$url?__a=1&max_id=endcursor'),
         );
+        final doc = parseHtmlDocument(data);
         return InstagramScrapper.scrape(doc, instagramResponse.body, url);
       } else if (LinkPreviewScrapper.isUrlYoutube(url)) {
+        final doc = parseHtmlDocument(data);
         return YouTubeScrapper.scrape(doc, url);
       } else if (LinkPreviewScrapper.isUrlAmazon(url)) {
+        final doc = parseHtmlDocument(data);
         return AmazonScrapper.scrape(doc, url);
       } else if (LinkPreviewScrapper.isUrlTwitter(url)) {
         final twitterResponse = await http.get(
           Uri.parse('https://publish.twitter.com/oembed?url=$url'),
         );
+        final doc = parseHtmlDocument(data);
         return TwitterScrapper.scrape(doc, twitterResponse.body, url);
       } else {
+        final doc = parseHtmlDocument(data);
         return DefaultScrapper.scrape(doc, url);
       }
     } catch (e) {
